@@ -455,9 +455,7 @@ function renderFunnel(elId, t){
       <div class="funnel-label">${s.label}</div>
     </div>
   `).join('');
-  document.getElementById(elId).innerHTML = html + `
-    <div style="flex-basis:100%;"></div>
-  `;
+  document.getElementById(elId).innerHTML = html;
   // sub pills appended after
   const parent = document.getElementById(elId).parentElement;
   let subEl = parent.querySelector('.funnel-sub');
