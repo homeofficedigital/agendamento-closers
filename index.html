@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Performance Comercial — Closers HOD · Setembro/26</title>
+<title>Performance Comercial — Closers HOD · Maio a Outubro/26</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -142,6 +142,14 @@ select{font:inherit;font-size:15px;padding:8px 12px;border:1px solid var(--linha
 .compl{margin-top:12px;font-size:13.5px;color:var(--tinta-2)}
 .compl strong{color:var(--tinta)}
 footer{max-width:1180px;margin:0 auto;padding:0 20px 40px;font-size:12px;color:var(--tinta-2)}
+
+.abas{display:flex;gap:4px;border-bottom:1px solid var(--linha);margin-top:26px;flex-wrap:wrap}
+.abas button{font:inherit;font-family:'Bricolage Grotesque','Public Sans',sans-serif;font-size:17px;font-weight:600;border:0;background:transparent;color:var(--tinta-2);padding:10px 16px 12px;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px}
+.abas button[aria-selected="true"]{color:var(--tinta);border-bottom-color:var(--verde-3)}
+.abas button:focus-visible{outline:2px solid var(--verde-3);outline-offset:2px}
+.aviso-sec{font-size:13px;color:var(--tinta-2);background:var(--card);border:1px solid var(--linha);border-left:3px solid var(--alerta-borda);border-radius:6px;padding:10px 14px;margin-top:22px;max-width:110ch}
+.aviso-sec strong{color:var(--tinta)}
+[hidden]{display:none!important}
 </style>
 </head>
 <body>
@@ -149,215 +157,294 @@ footer{max-width:1180px;margin:0 auto;padding:0 20px 40px;font-size:12px;color:v
   <div class="wrap">
     <div>
       <h1>Performance Comercial — Closers HOD</h1>
-      <div class="periodo">Setembro de 2026 · 01/09 a 30/09</div>
+      <div class="periodo">Maio a Outubro de 2026 · outubro em andamento, dados até 06/10</div>
     </div>
-    <div class="fonte">Reuniões e vendas: abas individuais dos 9 closers (agendamento_closer_set.xlsx). Faturamento: dashboard financeiro HOD, Setembro/26.</div>
+    <div class="fonte">Reuniões e vendas: abas GERAL MAI a OUT e abas individuais de setembro e outubro. Faturamento: dashboard financeiro HOD.</div>
   </div>
 </header>
 
 <main>
-  <details class="atencao" open>
-    <summary>Pontos de atenção nos dados antes de ler os números</summary>
+
+  <div class="abas" role="tablist" style="margin-top:4px">
+    <button type="button" role="tab" aria-selected="true" data-aba="mes" id="tab-mes">Time · maio a outubro</button>
+    <button type="button" role="tab" aria-selected="false" data-aba="closer" id="tab-closer">Closers · setembro e outubro</button>
+  </div>
+
+  <div id="aba-mes" role="tabpanel" aria-labelledby="tab-mes">
+    <section>
+      <div class="sec-head"><h2>Maio a setembro</h2><span class="sub">meses fechados</span></div>
+      <div class="kpis" id="mes-kpis"></div>
+    </section>
+    <section>
+      <div class="sec-head"><h2>Outubro em andamento</h2><span class="sub">01 a 06/10</span></div>
+      <div class="kpis" id="mes-kpis-out"></div>
+    </section>
+    <section>
+      <div class="sec-head"><h2>Comparativo mensal</h2><span class="sub">indicador ao lado de cada valor = distância da média mensal do período</span></div>
+      <div class="tabela-box"><table id="mes-tabela"></table></div>
+      <div class="legenda">
+        <span><span class="chip acima">+12%</span> acima da média</span>
+        <span><span class="chip perto">−4%</span> próximo da média (até ±10%)</span>
+        <span><span class="chip abaixo">−25%</span> abaixo da média</span>
+      </div>
+      <p class="nota">Média mensal = média simples dos meses fechados (maio a setembro); outubro, em andamento, não entra na média nem no total. Total do período = soma para reuniões, vendas e faturamento; conversão e ticket do total são calculados sobre os somatórios. Vendas de Follow começaram em setembro; com só um mês fechado, ainda não há média para comparação.</p>
+    </section>
+    <section>
+      <div class="sec-head"><h2>Comparação com a média mensal</h2><span class="sub">a linha tracejada marca a média</span></div>
+      <div class="painel">
+        <div class="painel-top"><div class="seg" role="group" aria-label="Métrica" id="mes-seg"></div><div class="ref" id="mes-ref"></div></div>
+        <div class="barras" id="mes-barras"></div>
+      </div>
+    </section>
+    <section>
+      <div class="sec-head"><h2>Detalhamento mensal</h2></div>
+      <div class="ind-top"><label for="mes-sel" class="sub">Mês</label><select id="mes-sel"></select></div>
+      <div class="ind-grid" id="mes-grid"></div>
+      <p class="compl" id="mes-compl"></p>
+    </section>
+  </div>
+
+  <div id="aba-closer" role="tabpanel" aria-labelledby="tab-closer" hidden>
+    <div class="ind-top" style="margin-top:22px"><label for="closer-mes" class="sub">Mês</label><div class="seg" role="group" aria-label="Mês" id="closer-mes"><button type="button" data-mes="Setembro" aria-pressed="false">Setembro</button><button type="button" data-mes="Outubro" aria-pressed="true">Outubro (até 06/10)</button></div></div>
+    <p class="aviso-sec" id="closer-aviso"></p>
+    <section>
+      <div class="sec-head"><h2 id="closer-titulo">Visão geral do time</h2><span class="sub" id="closer-sub"></span></div>
+      <div class="kpis" id="closer-kpis"></div>
+    </section>
+    <section>
+      <div class="sec-head"><h2>Comparativo dos closers</h2><span class="sub">ordem alfabética · indicador = distância da média dos closers</span></div>
+      <div class="tabela-box"><table id="closer-tabela"></table></div>
+      <div class="legenda">
+        <span><span class="chip acima">+12%</span> acima da média</span>
+        <span><span class="chip perto">−4%</span> próximo da média (até ±10%)</span>
+        <span><span class="chip abaixo">−25%</span> abaixo da média</span>
+      </div>
+      <p class="nota">Média dos closers = média simples dos resultados individuais do mês selecionado (ticket médio e % Follow só entre closers com vendas). Total do time = soma para reuniões, vendas, faturamento e Follow; conversão, ticket e % Follow do total são calculados sobre os somatórios.</p>
+    </section>
+    <section>
+      <div class="sec-head"><h2>Comparação com a média dos closers</h2><span class="sub">a linha tracejada marca a média</span></div>
+      <div class="painel">
+        <div class="painel-top"><div class="seg" role="group" aria-label="Métrica" id="closer-seg"></div><div class="ref" id="closer-ref"></div></div>
+        <div class="barras" id="closer-barras"></div>
+      </div>
+    </section>
+    <section>
+      <div class="sec-head"><h2>Detalhamento individual</h2></div>
+      <div class="ind-top"><label for="closer-sel" class="sub">Closer</label><select id="closer-sel"></select></div>
+      <div class="ind-grid" id="closer-grid"></div>
+      <p class="compl" id="closer-compl"></p>
+    </section>
+  </div>
+  <section>
+  <details class="atencao">
+    <summary>Pontos de atenção nos dados (clique para expandir)</summary>
     <ul>
-      <li><strong>Vendas de Follow (coluna H) com valores fracionados.</strong> Eduardo (14, 17 e 18/09), Misael (01, 05 e 22/09) e Rodrigo (7 dias) têm 0,01 ou 0,02 registrados — sempre em dias com 1 ou 2 vendas. A célula tem formato inteiro, então a planilha exibe esses valores como 0. Não há como confirmar se representam 1 venda de Follow digitada em formato percentual. As duas leituras estão disponíveis abaixo; nenhuma foi escolhida como correta.</li>
-      <li><strong>Misael — total do mês na planilha (4) não bate com os dias.</strong> O subtotal da semana 1 mostra 3 vendas de Follow, mas os dias da semana somam 0,03. O dashboard recalcula a partir dos dias.</li>
-      <li><strong>Eduardo — 24/09:</strong> 3 vendas de Follow registradas em dia sem vendas preenchidas na coluna F. Na semana 21–26/09, Follow (4) fica acima das vendas (2). Mantido como registrado. Em 23/09 há 8 agendadas sem realizadas preenchidas (contadas como 0).</li>
-      <li><strong>Alvaro</strong> tem lançamentos apenas de 01 a 04/09 e nenhum faturamento como closer em setembro no HTML (que o lista como SDR a partir de setembro). Entra como closer na média do time, conforme a regra; ticket médio e % Follow dele não existem (0 vendas), então essas duas médias usam 8 closers.</li>
-      <li><strong>Rafael</strong> aparece como closer no HTML com R$ 4.299,93 em setembro, mas não tem aba na planilha. Esse valor fica fora do faturamento do time (R$ 289.154,51 no HTML × R$ 284.854,58 dos 9 closers).</li>
-      <li><strong>Faturamento × quantidade de vendas:</strong> no HTML, Misael tem faturamento em 9 dias distintos e Eduardo em 15, contra 5 e 14 vendas na planilha. Pode refletir data de pagamento ou parcelas, mas afeta o ticket médio desses dois.</li>
-      <li><strong>Associação de nomes</strong> (todas com segurança): LEPT → Leandro PT (Portuga), TULIO → Túlio, LARI → Larissa, EDU → Eduardo; Misael, Luigi, Paulo, Alvaro e Rodrigo com o mesmo nome.</li>
+      <li><strong>Outubro é mês em andamento</strong>, com lançamentos de 01 a 06/10. Fica fora da média mensal e do total do período; volumes (reuniões, vendas) não são comparados com meses fechados, só a taxa de conversão.</li>
+      <li><strong>Faturamento de outubro com valores sem venda correspondente na planilha.</strong> Eduardo tem R$ 3.237,07 no dashboard financeiro (02 e 05/10) e nenhuma venda lançada na aba dele. Túlio tem R$ 370,00 (05/10), mas a aba dele foi desconsiderada. Na visão por closer, Túlio fica fora (R$ 16.547,69) e o ticket médio de Eduardo não se aplica (0 vendas). Na visão mensal, o faturamento soma todos os closers (R$ 16.917,69) e o ticket divide pelas 8 vendas da GERAL OUT, então inclui esses valores.</li>
+      <li><strong>Closers em outubro:</strong> abas de Misael e Túlio desconsideradas, conforme orientação. Eduardo e Alvaro não têm nenhum lançamento e entram com zero em todas as métricas — inclusive na média dos 7 closers.</li>
+      <li><strong>Aba do Paulo (outubro) com datas deslocadas:</strong> falta a linha de 03/10, então os lançamentos rotulados como 05 e 06/10 correspondem a 04 e 05/10 na aba GERAL OUT. O total do mês não muda, e a soma das abas bate com a GERAL OUT em todas as métricas.</li>
+      <li><strong>Setembro: 111 vendas no consolidado × 107 nas abas por closer.</strong> A diferença está em 24/09 (8 vendas na GERAL SET, 4 nas abas individuais), ainda não atribuída a nenhum closer. A visão por closer de setembro usa as abas individuais da versão anterior.</li>
+      <li><strong>Coluna H com 0,01 e 0,02 em setembro:</strong> leitura padrão “0,01 = 1 venda”, com base na correção feita nos lançamentos de Eduardo. Outubro não tem esse tipo de lançamento.</li>
+      <li><strong>Faturamento de setembro:</strong> a visão mensal soma todos os closers do dashboard financeiro (R$ 290.949,71, inclui Rafael com R$ 4.299,93); a visão por closer soma só os 9 closers com aba (R$ 286.649,78). Na versão atualizada, Larissa ganhou R$ 1.795,20 em setembro em relação à versão anterior. Maio a agosto seguem o critério da visão mensal.</li>
+      <li><strong>Alvaro</strong> tem lançamentos só até 04/09 e R$ 0 como closer em setembro. Ticket médio e % Follow não existem para quem não teve vendas, então essas médias usam só os closers com venda.</li>
     </ul>
     <div class="leitura">
       <span>Leitura da coluna H:</span>
       <div class="seg" role="group" aria-label="Leitura das vendas de Follow">
-        <button type="button" data-l="A" aria-pressed="true">Como exibido na planilha (0,01 = 0)</button>
-        <button type="button" data-l="B" aria-pressed="false">0,01 = 1 venda</button>
+        <button type="button" data-l="B" aria-pressed="true">0,01 = 1 venda</button>
+        <button type="button" data-l="A" aria-pressed="false">Como exibido na planilha (0,01 = 0)</button>
       </div>
       <span class="sub" id="leituraInfo"></span>
     </div>
   </details>
-
-  <section>
-    <div class="sec-head"><h2>Visão geral do time</h2><span class="sub">9 closers, incluindo Rodrigo</span></div>
-    <div class="kpis" id="kpis"></div>
-  </section>
-
-  <section>
-    <div class="sec-head"><h2>Comparativo dos closers</h2><span class="sub">ordem alfabética · indicador ao lado de cada valor = distância da média dos closers</span></div>
-    <div class="tabela-box"><table id="tabela"></table></div>
-    <div class="legenda">
-      <span><span class="chip acima">+12%</span> acima da média</span>
-      <span><span class="chip perto">−4%</span> próximo da média (até ±10%)</span>
-      <span><span class="chip abaixo">−25%</span> abaixo da média</span>
-    </div>
-    <p class="nota">Média dos closers = média simples dos 9 resultados individuais (ticket médio e % Follow: 8, sem Alvaro). Total do time = soma para reuniões, vendas, faturamento e Follow; conversão, ticket e % Follow do total são calculados sobre os somatórios (ex.: vendas totais ÷ reuniões realizadas totais).</p>
-  </section>
-
-  <section>
-    <div class="sec-head"><h2>Comparação com a média</h2><span class="sub">a linha tracejada marca a média dos closers</span></div>
-    <div class="painel">
-      <div class="painel-top">
-        <div class="seg" role="group" aria-label="Métrica" id="segMetrica"></div>
-        <div class="ref" id="refMedia"></div>
-      </div>
-      <div class="barras" id="barras"></div>
-    </div>
-  </section>
-
-  <section>
-    <div class="sec-head"><h2>Detalhamento individual</h2></div>
-    <div class="ind-top">
-      <label for="selCloser" class="sub">Closer</label>
-      <select id="selCloser"></select>
-    </div>
-    <div class="ind-grid" id="indGrid"></div>
-    <p class="compl" id="indCompl"></p>
   </section>
 </main>
-<footer>Dias sem preenchimento na planilha considerados como zero. Vendas = coluna F; Vendas de Follow = coluna H; coluna G (leads enviados para Follow) exibida só como dado complementar.</footer>
+<footer>Valores recalculados a partir das linhas diárias; dias sem preenchimento considerados como zero. Vendas = coluna VENDAS; Vendas de Follow = coluna VENDA FOLLOW; leads enviados para Follow (coluna FOLLOW) aparecem só como dado complementar.</footer>
 
 <script>
-const ROWS = [{"nome": "Alvaro", "aba": "ALVARO", "ag": 20, "real": 13, "vendas": 0, "follow": 2, "vfA": 0, "vfB": 0, "fat": 0}, {"nome": "Eduardo", "aba": "EDU", "ag": 77, "real": 41, "vendas": 14, "follow": 21, "vfA": 5, "vfB": 8, "fat": 47918.11}, {"nome": "Larissa", "aba": "LARI", "ag": 88, "real": 63, "vendas": 9, "follow": 3, "vfA": 2, "vfB": 2, "fat": 24385.46}, {"nome": "Leandro Portuga", "aba": "LEPT", "ag": 98, "real": 58, "vendas": 18, "follow": 4, "vfA": 13, "vfB": 13, "fat": 49028.94}, {"nome": "Luigi", "aba": "LUIGI", "ag": 154, "real": 88, "vendas": 11, "follow": 28, "vfA": 6, "vfB": 6, "fat": 17930.55}, {"nome": "Misael", "aba": "MISAEL", "ag": 85, "real": 53, "vendas": 5, "follow": 0, "vfA": 1, "vfB": 5, "fat": 14478.4}, {"nome": "Paulo", "aba": "PAULO", "ag": 160, "real": 102, "vendas": 10, "follow": 7, "vfA": 0, "vfB": 0, "fat": 29337.11}, {"nome": "Rodrigo", "aba": "RODRIGO", "ag": 211, "real": 136, "vendas": 13, "follow": 34, "vfA": 0, "vfB": 7, "fat": 42900.42}, {"nome": "Túlio", "aba": "TULIO", "ag": 130, "real": 80, "vendas": 27, "follow": 9, "vfA": 16, "vfB": 16, "fat": 58875.59}];
-const st = { leitura:'A', metrica:'vendas', closer:ROWS[0].nome };
+const MESES = [{"nome": "Maio", "ag": 1083, "real": 608, "vendas": 117, "follow": null, "vfA": null, "vfB": null, "fat": 302599.15}, {"nome": "Junho", "ag": 1093, "real": 625, "vendas": 140, "follow": null, "vfA": null, "vfB": null, "fat": 385894.26}, {"nome": "Julho", "ag": 982, "real": 588, "vendas": 137, "follow": null, "vfA": null, "vfB": null, "fat": 384660.12}, {"nome": "Agosto", "ag": 1126, "real": 755, "vendas": 118, "follow": null, "vfA": null, "vfB": null, "fat": 347698.84}, {"nome": "Setembro", "ag": 1023, "real": 634, "vendas": 111, "follow": 108, "vfA": 46, "vfB": 57, "fat": 290949.71}, {"nome": "Outubro", "parcial": true, "ag": 119, "real": 76, "vendas": 8, "follow": 17, "vfA": 4, "vfB": 4, "fat": 16917.69}];
+const CLOSERS = {"Setembro": [{"nome": "Alvaro", "ag": 20, "real": 13, "vendas": 0, "follow": 2, "vfA": 0, "vfB": 0, "fat": 0}, {"nome": "Eduardo", "ag": 77, "real": 41, "vendas": 14, "follow": 21, "vfA": 5, "vfB": 8, "fat": 47918.11}, {"nome": "Larissa", "ag": 88, "real": 63, "vendas": 9, "follow": 3, "vfA": 2, "vfB": 2, "fat": 26180.66}, {"nome": "Leandro Portuga", "ag": 98, "real": 58, "vendas": 18, "follow": 4, "vfA": 13, "vfB": 13, "fat": 49028.94}, {"nome": "Luigi", "ag": 154, "real": 88, "vendas": 11, "follow": 28, "vfA": 6, "vfB": 6, "fat": 17930.55}, {"nome": "Misael", "ag": 85, "real": 53, "vendas": 5, "follow": 0, "vfA": 1, "vfB": 5, "fat": 14478.4}, {"nome": "Paulo", "ag": 160, "real": 102, "vendas": 10, "follow": 7, "vfA": 0, "vfB": 0, "fat": 29337.11}, {"nome": "Rodrigo", "ag": 211, "real": 136, "vendas": 13, "follow": 34, "vfA": 0, "vfB": 7, "fat": 42900.42}, {"nome": "Túlio", "ag": 130, "real": 80, "vendas": 27, "follow": 9, "vfA": 16, "vfB": 16, "fat": 58875.59}], "Outubro": [{"nome": "Alvaro", "ag": 0, "real": 0, "vendas": 0, "follow": 0, "vfA": 0, "vfB": 0, "fat": 0}, {"nome": "Eduardo", "ag": 0, "real": 0, "vendas": 0, "follow": 0, "vfA": 0, "vfB": 0, "fat": 3237.07}, {"nome": "Larissa", "ag": 4, "real": 4, "vendas": 2, "follow": 0, "vfA": 0, "vfB": 0, "fat": 4452.0}, {"nome": "Leandro Portuga", "ag": 28, "real": 20, "vendas": 1, "follow": 5, "vfA": 1, "vfB": 1, "fat": 1649.76}, {"nome": "Luigi", "ag": 27, "real": 15, "vendas": 4, "follow": 4, "vfA": 2, "vfB": 2, "fat": 3618.46}, {"nome": "Paulo", "ag": 30, "real": 19, "vendas": 1, "follow": 3, "vfA": 1, "vfB": 1, "fat": 3590.4}, {"nome": "Rodrigo", "ag": 30, "real": 18, "vendas": 0, "follow": 5, "vfA": 0, "vfB": 0, "fat": 0}]};
+const AVISOS = {
+  Setembro: '<strong>Base: abas individuais de setembro (versão anterior da planilha).</strong> Somam 107 vendas, contra 111 no consolidado do mês — diferença de 4 vendas em 24/09, ainda não atribuída a nenhum closer. Faturamento: 9 closers com aba.',
+  Outubro: '<strong>Mês em andamento, dados de 01 a 06/10.</strong> 7 closers (Misael e Túlio desconsiderados); Eduardo e Alvaro sem lançamentos na planilha, contados como zero; conversão não se aplica a quem não teve reunião realizada, então a média de conversão usa 5 closers. Eduardo tem R$ 3.237,07 de faturamento sem venda lançada.'
+};
+const st = { leitura:'B' };
 
 const fmtInt = n => n.toLocaleString('pt-BR',{maximumFractionDigits:0});
 const fmtDec = n => n.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1});
 const fmtR = n => 'R$ ' + n.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
-const fmtRk = n => n>=10000 ? 'R$ ' + (n/1000).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1}) + ' mil' : fmtR(n);
 const fmtPct = n => n.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1}) + '%';
 
 const METRICAS = [
-  {k:'ag',     nome:'Reuniões agendadas', curto:'Agendadas',  fmt:fmtInt, mfmt:fmtDec, soma:true},
-  {k:'real',   nome:'Reuniões realizadas',curto:'Realizadas', fmt:fmtInt, mfmt:fmtDec, soma:true},
-  {k:'vendas', nome:'Vendas realizadas',  curto:'Vendas',     fmt:fmtInt, mfmt:fmtDec, soma:true},
-  {k:'conv',   nome:'Taxa de conversão',  curto:'Conversão',  fmt:fmtPct, mfmt:fmtPct},
-  {k:'fat',    nome:'Faturamento',        curto:'Faturamento',fmt:fmtR,   mfmt:fmtR, soma:true, kfmt:fmtRk},
-  {k:'ticket', nome:'Ticket médio',       curto:'Ticket médio',     fmt:fmtR,   mfmt:fmtR},
-  {k:'vf',     nome:'Vendas de Follow',   curto:'Vendas Follow', fmt:fmtInt, mfmt:fmtDec, soma:true},
-  {k:'pvf',    nome:'% de vendas de Follow', curto:'% Follow', fmt:fmtPct, mfmt:fmtPct},
+  {k:'ag',     nome:'Reuniões agendadas', curto:'Agendadas',  fmt:fmtInt, mfmt:fmtDec},
+  {k:'real',   nome:'Reuniões realizadas',curto:'Realizadas', fmt:fmtInt, mfmt:fmtDec},
+  {k:'vendas', nome:'Vendas realizadas',  curto:'Vendas',     fmt:fmtInt, mfmt:fmtDec},
+  {k:'conv',   nome:'Taxa de conversão',  curto:'Conversão',  fmt:fmtPct, mfmt:fmtPct, taxa:true},
+  {k:'fat',    nome:'Faturamento',        curto:'Faturamento',fmt:fmtR,   mfmt:fmtR},
+  {k:'ticket', nome:'Ticket médio',       curto:'Ticket médio', fmt:fmtR, mfmt:fmtR, taxa:true},
+  {k:'vf',     nome:'Vendas de Follow',   curto:'Vendas Follow', fmt:fmtInt, mfmt:fmtDec},
+  {k:'pvf',    nome:'% de vendas de Follow', curto:'% Follow', fmt:fmtPct, mfmt:fmtPct, taxa:true},
 ];
-const GRAF = ['vendas','conv','fat','ticket','real'];
+const GRAF = [['vendas','Vendas'],['conv','Conversão'],['fat','Faturamento'],['ticket','Ticket médio'],['real','Reuniões realizadas']];
 
-function calc(){
-  const cl = ROWS.map(r=>{
-    const vf = st.leitura==='A' ? r.vfA : r.vfB;
-    return {...r, vf,
-      conv: r.real ? r.vendas/r.real*100 : null,
-      ticket: r.vendas ? r.fat/r.vendas : null,
-      pvf: r.vendas ? vf/r.vendas*100 : null};
-  });
-  const media = {}, n = {};
+function enrich(r){
+  const vf = r.vfA===null ? null : (st.leitura==='A' ? r.vfA : r.vfB);
+  return {...r, vf,
+    conv: r.real ? r.vendas/r.real*100 : null,
+    ticket: (r.fat!==null && r.vendas) ? r.fat/r.vendas : null,
+    pvf: (vf!==null && r.vendas) ? vf/r.vendas*100 : null};
+}
+function calc(rows){
+  const cl = rows.map(enrich);
+  const base = cl.filter(c=>!c.parcial);
+  const media={}, n={};
   METRICAS.forEach(m=>{
-    const vals = cl.map(c=>c[m.k]).filter(v=>v!==null);
-    n[m.k] = vals.length;
-    media[m.k] = vals.reduce((a,b)=>a+b,0)/vals.length;
+    const vals = base.map(c=>c[m.k]).filter(v=>v!==null);
+    n[m.k]=vals.length;
+    media[m.k] = vals.length>1 ? vals.reduce((a,b)=>a+b,0)/vals.length : null;
   });
-  const t = {ag:0,real:0,vendas:0,fat:0,vf:0,follow:0};
-  cl.forEach(c=>{for(const k in t) t[k]+=c[k];});
-  t.conv = t.vendas/t.real*100; t.ticket = t.fat/t.vendas; t.pvf = t.vf/t.vendas*100;
-  return {cl, media, n, t};
+  return {cl, media, n, t: totais(base)};
+}
+function totais(rows){
+  const t={ag:0,real:0,vendas:0,fat:0,vf:0,follow:0,vendasF:0,semFat:false};
+  rows.forEach(c=>{['ag','real','vendas'].forEach(k=>t[k]+=c[k]); if(c.fat===null) t.semFat=true; else t.fat+=c.fat;
+    if(c.vf!==null){t.vf+=c.vf;t.follow+=c.follow;t.vendasF+=c.vendas;}});
+  t.conv=t.real? t.vendas/t.real*100 : null;
+  if(t.semFat){t.fat=null;t.ticket=null;} else t.ticket=t.vendas? t.fat/t.vendas : null;
+  t.pvf=t.vendasF? t.vf/t.vendasF*100 : null;
+  return t;
 }
 
-function desvio(v, m){
-  if(v===null || !m) return null;
-  return v/m - 1;
-}
 function chip(v, m){
-  const d = desvio(v,m);
-  if(d===null) return '<span class="chip na">—</span>';
-  const cls = Math.abs(d)<=0.10 ? 'perto' : (d>0?'acima':'abaixo');
-  const r = Math.round(d*100);
-  const s = (r>0?'+':r<0?'−':'') + Math.abs(r) + '%';
-  return `<span class="chip ${cls}">${s}</span>`;
+  if(v===null || m===null || !m) return '';
+  const d=v/m-1, r=Math.round(d*100);
+  const cls = Math.abs(d)<=0.10 ? 'perto' : (r>0?'acima':'abaixo');
+  return `<span class="chip ${cls}">${(r>0?'+':r<0?'−':'')+Math.abs(r)}%</span>`;
 }
-const val = (m, v) => v===null ? '—' : m.fmt(v);
+// mês parcial: só taxas são comparáveis com a média de meses fechados
+const chipRow = (c,m,med) => (c.parcial && !m.taxa) ? '' : chip(c[m.k],med);
+const nd = '<span class="sub">sem dado</span>';
+function kpiHTML(cards){ return cards.map(([r,v,d,dest])=>`<div class="kpi${dest?' dest':''}"><div class="rot">${r}</div><div class="val">${v}</div>${d?`<div class="det">${d}</div>`:''}</div>`).join(''); }
+const opt = (v,f) => v===null ? '—' : f(v);
 
-function renderKPIs(D){
+const VIEWS = {
+  mes: {
+    rows: ()=>MESES, rotulo:'Mês', mediaLbl:'MÉDIA MENSAL', totalLbl:'TOTAL MAI–SET', mediaRef:'Média mensal (mai–set)',
+    sel: 'Setembro', metrica:'vendas',
+    label: c => c.parcial ? `${c.nome} <span class="sub">(até 06/10)</span>` : c.nome,
+    kpis(D){ const t=D.t, nf=MESES.filter(m=>!m.parcial).length; return [
+      ['Reuniões agendadas', fmtInt(t.ag), `média de ${fmtDec(t.ag/nf)} por mês`],
+      ['Reuniões realizadas', fmtInt(t.real), `${fmtPct(t.real/t.ag*100)} das agendadas`],
+      ['Vendas realizadas', fmtInt(t.vendas), `média de ${fmtDec(t.vendas/nf)} por mês`],
+      ['Taxa de conversão', fmtPct(t.conv), 'vendas ÷ reuniões realizadas', true],
+      ['Faturamento', fmtR(t.fat), `média de ${fmtR(t.fat/nf)} por mês`, true],
+      ['Ticket médio', fmtR(t.ticket), 'faturamento ÷ vendas'],
+      ['Vendas de Follow', fmtInt(t.vf), `acompanhamento desde setembro · ${fmtInt(t.follow)} leads enviados para Follow`],
+      ['% de vendas de Follow', fmtPct(t.pvf), `sobre ${t.vendasF} vendas de setembro`],
+    ];},
+    nMedia(){ return ''; },
+    semMedia: 'sem média de comparação ainda',
+  },
+  closer: {
+    rows: ()=>CLOSERS[VIEWS.closer.mes], rotulo:'Closer', mediaLbl:'MÉDIA DOS CLOSERS', totalLbl:'TOTAL DO TIME', mediaRef:'Média dos closers',
+    mes:'Outubro', sel: null, metrica:'vendas',
+    label: c => c.nome,
+    kpis(D){ const t=D.t, nc=D.cl.length; return [
+      ['Reuniões agendadas', fmtInt(t.ag), ''],
+      ['Reuniões realizadas', fmtInt(t.real), `${fmtPct(t.real/t.ag*100)} das agendadas`],
+      ['Vendas realizadas', fmtInt(t.vendas), 'soma das abas individuais'],
+      ['Taxa de conversão', opt(t.conv,fmtPct), 'vendas ÷ reuniões realizadas', true],
+      ['Faturamento', t.fat===null?'Sem dado':fmtR(t.fat), t.fat===null?'aguardando dashboard financeiro de outubro':`${nc} closers com aba`, true],
+      ['Ticket médio', t.ticket===null?'Sem dado':fmtR(t.ticket), 'faturamento ÷ vendas'],
+      ['Vendas de Follow', fmtInt(t.vf), `${fmtInt(t.follow)} leads enviados para Follow`],
+      ['% de vendas de Follow', opt(t.pvf,fmtPct), 'vendas de Follow ÷ vendas'],
+    ];},
+    nMedia(m,D){ return D.media[m.k]!==null && D.n[m.k]<D.cl.length ? ` <span class="sub">(${D.n[m.k]})</span>` : ''; },
+    semMedia: 'sem dado',
+  }
+};
+
+function renderView(id){
+  const V=VIEWS[id], D=calc(V.rows()), $=s=>document.getElementById(`${id}-${s}`);
+  if(V.sel===null || !D.cl.find(c=>c.nome===V.sel)) V.sel = D.cl[0].nome;
+  const fv=(m,v)=> v===null ? '<span class="sub">—</span>' : m.fmt(v);
+  $('kpis').innerHTML = kpiHTML(V.kpis(D));
+  if(id==='mes'){
+    const o = enrich(MESES.find(m=>m.parcial));
+    $('kpis-out').innerHTML = kpiHTML([
+      ['Reuniões agendadas', fmtInt(o.ag), ''],
+      ['Reuniões realizadas', fmtInt(o.real), `${fmtPct(o.real/o.ag*100)} das agendadas`],
+      ['Vendas realizadas', fmtInt(o.vendas), ''],
+      ['Taxa de conversão', fmtPct(o.conv), `média mai–set: ${fmtPct(D.media.conv)} ${chip(o.conv,D.media.conv)}`, true],
+      ['Faturamento', fmtR(o.fat), 'todos os closers do dashboard financeiro', true],
+      ['Ticket médio', fmtR(o.ticket), `média mai–set: ${fmtR(D.media.ticket)} ${chip(o.ticket,D.media.ticket)}`],
+      ['Vendas de Follow', fmtInt(o.vf), `${fmtInt(o.follow)} leads enviados para Follow`],
+      ['% de vendas de Follow', fmtPct(o.pvf), `setembro: ${fmtPct(D.cl.find(c=>c.nome==='Setembro').pvf)}`],
+    ]);
+  }
   const t=D.t;
-  const cards = [
-    ['Reuniões agendadas', fmtInt(t.ag), ''],
-    ['Reuniões realizadas', fmtInt(t.real), `${fmtPct(t.real/t.ag*100)} das agendadas`],
-    ['Vendas realizadas', fmtInt(t.vendas), 'coluna F'],
-    ['Taxa de conversão', fmtPct(t.conv), 'vendas ÷ reuniões realizadas', true],
-    ['Faturamento', fmtR(t.fat), 'dashboard financeiro', true],
-    ['Ticket médio', fmtR(t.ticket), 'faturamento ÷ vendas'],
-    ['Vendas de Follow', fmtInt(t.vf), `${fmtInt(t.follow)} leads enviados para Follow`],
-    ['% de vendas de Follow', fmtPct(t.pvf), 'vendas de Follow ÷ vendas'],
-  ];
-  document.getElementById('kpis').innerHTML = cards.map(([r,v,d,dest])=>
-    `<div class="kpi${dest?' dest':''}"><div class="rot">${r}</div><div class="val">${v}</div>${d?`<div class="det">${d}</div>`:''}</div>`).join('');
-}
-
-function renderTabela(D){
-  const head = `<thead><tr><th>Closer</th>${METRICAS.map(m=>`<th>${m.curto}</th>`).join('')}</tr></thead>`;
-  const body = D.cl.map(c=>`<tr><td><span class="n">${c.nome}</span></td>${
-    METRICAS.map(m=>`<td>${val(m,c[m.k])}${chip(c[m.k],D.media[m.k])}</td>`).join('')}</tr>`).join('');
-  const media = `<tr class="media"><td>MÉDIA DOS CLOSERS</td>${METRICAS.map(m=>`<td>${m.mfmt(D.media[m.k])}${D.n[m.k]<9?` <span class="sub">(${D.n[m.k]})</span>`:''}</td>`).join('')}</tr>`;
-  const total = `<tr class="total"><td>TOTAL DO TIME</td>${METRICAS.map(m=>`<td>${m.fmt(D.t[m.k])}</td>`).join('')}</tr>`;
-  document.getElementById('tabela').innerHTML = head + `<tbody>${body}${media}${total}</tbody>`;
-}
-
-function renderSeg(){
-  document.getElementById('segMetrica').innerHTML = GRAF.map(k=>{
-    const m = METRICAS.find(x=>x.k===k);
-    return `<button type="button" data-m="${k}" aria-pressed="${st.metrica===k}">${m.curto==='Realizadas'?'Reuniões realizadas':m.curto}</button>`;
+  const tot={ag:fmtInt(t.ag),real:fmtInt(t.real),vendas:fmtInt(t.vendas),conv:opt(t.conv,fmtPct),fat:opt(t.fat,fmtR),ticket:opt(t.ticket,fmtR),
+    vf: id==='closer'?fmtInt(t.vf):'—', pvf: id==='closer'?opt(t.pvf,fmtPct):'—'};
+  $('tabela').innerHTML = `<thead><tr><th>${V.rotulo}</th>${METRICAS.map(m=>`<th>${m.curto}</th>`).join('')}</tr></thead><tbody>`+
+    D.cl.map(c=>`<tr${c.parcial?' style="font-style:italic"':''}><td><span class="n">${V.label(c)}</span></td>${METRICAS.map(m=>`<td>${fv(m,c[m.k])}${chipRow(c,m,D.media[m.k])}</td>`).join('')}</tr>`).join('')+
+    `<tr class="media"><td>${V.mediaLbl}</td>${METRICAS.map(m=>`<td>${D.media[m.k]===null?'—':m.mfmt(D.media[m.k])}${V.nMedia(m,D)}</td>`).join('')}</tr>`+
+    `<tr class="total"><td>${V.totalLbl}</td>${METRICAS.map(m=>`<td>${tot[m.k]}</td>`).join('')}</tr></tbody>`;
+  // Barras
+  $('seg').innerHTML = GRAF.map(([k,l])=>`<button type="button" data-m="${k}" aria-pressed="${V.metrica===k}">${l}</button>`).join('');
+  const m=METRICAS.find(x=>x.k===V.metrica), med=D.media[m.k];
+  if(med===null){
+    $('ref').innerHTML=''; $('barras').innerHTML = `<p class="sub">${m.nome}: sem dado neste período.</p>`;
+  } else {
+    const max=Math.max(...D.cl.map(c=>c[m.k]??0), med)*1.06||1, pm=med/max*100;
+    $('ref').innerHTML = `${V.mediaRef}: <strong>${m.mfmt(med)}</strong>${V.nMedia(m,D)}`;
+    $('barras').innerHTML = `<div class="eixo-m"><div></div><div class="t"><span style="left:${pm}%">média ${m.mfmt(med)}</span></div><div></div></div>`+
+      D.cl.map(c=>{const v=c[m.k]; const op=c.parcial?'opacity:.45;':'';
+        return `<div class="linha-b"><div>${V.label(c)}</div>
+        <div class="trilho" role="img" aria-label="${c.nome}: ${v===null?'sem dado':m.fmt(v)}"><div class="b" style="${op}width:${(v??0)/max*100}%"></div><div class="m" style="left:${pm}%"></div></div>
+        <div class="v"><span>${v===null?'sem dado':m.fmt(v)}</span>${chipRow(c,m,med)}</div></div>`;}).join('');
+  }
+  // Detalhe
+  const sel=$('sel');
+  sel.innerHTML = D.cl.map(r=>`<option${r.nome===V.sel?' selected':''}>${r.nome}</option>`).join('');
+  const c=D.cl.find(x=>x.nome===V.sel);
+  $('grid').innerHTML = METRICAS.map(m=>{
+    const v=c[m.k], med=D.media[m.k], comp = v!==null && med!==null && !(c.parcial && !m.taxa);
+    const mx=Math.max(v??0,med??0)||1;
+    const txt = comp ? 'média '+m.mfmt(med) : (v===null ? (m.k==='fat'||m.k==='ticket' ? (m.k==='ticket' && c.fat ? 'faturamento sem venda lançada' : 'sem vendas no período') : m.k==='conv' ? 'sem reuniões realizadas' : m.k==='pvf' ? 'sem vendas no período' : V.semMedia) : (c.parcial && !m.taxa ? 'mês em andamento' : 'sem média de comparação ainda'));
+    return `<div class="tile"><div class="rot">${m.nome}</div><div class="val">${v===null?'—':m.fmt(v)}</div>
+      <div class="cmp">${comp?chip(v,med):''}<span>${txt}</span></div>
+      ${comp?`<div class="mini" aria-hidden="true"><div class="c" style="width:${v/mx*100}%"></div><div class="md" style="width:${med/mx*100}%"></div></div>`:''}</div>`;
   }).join('');
-}
-
-function renderBarras(D){
-  const m = METRICAS.find(x=>x.k===st.metrica);
-  const med = D.media[m.k];
-  const vals = D.cl.map(c=>c[m.k]??0);
-  const max = Math.max(...vals, med) * 1.06 || 1;
-  const pm = med/max*100;
-  document.getElementById('refMedia').innerHTML = `Média dos closers: <strong>${m.mfmt(med)}</strong>${D.n[m.k]<9?` (${D.n[m.k]} closers com vendas)`:''}`;
-  document.getElementById('barras').innerHTML =
-    `<div class="eixo-m"><div></div><div class="t"><span style="left:${pm}%">média ${m.mfmt(med)}</span></div><div></div></div>` +
-    D.cl.map(c=>{
-      const v=c[m.k];
-      return `<div class="linha-b"><div>${c.nome}</div>
-        <div class="trilho" role="img" aria-label="${c.nome}: ${val(m,v)}"><div class="b" style="width:${(v??0)/max*100}%"></div><div class="m" style="left:${pm}%"></div></div>
-        <div class="v"><span>${val(m,v)}</span>${chip(v,med)}</div></div>`;
-    }).join('');
-}
-
-function renderInd(D){
-  const c = D.cl.find(x=>x.nome===st.closer);
-  document.getElementById('indGrid').innerHTML = METRICAS.map(m=>{
-    const v=c[m.k], med=D.media[m.k];
-    const max = Math.max(v??0, med) || 1;
-    return `<div class="tile"><div class="rot">${m.nome}</div>
-      <div class="val">${val(m,v)}</div>
-      <div class="cmp">${chip(v,med)}<span>média ${m.mfmt(med)}</span></div>
-      <div class="mini" aria-hidden="true"><div class="c" style="width:${(v??0)/max*100}%"></div><div class="md" style="width:${med/max*100}%"></div></div>
-    </div>`;
-  }).join('');
-  const nota = c.vendas===0 ? ' Sem vendas no período: ticket médio e % de Follow não se aplicam.' : '';
-  const diff = c.vfA!==c.vfB ? ` Vendas de Follow: ${c.vfA} na leitura “como exibido” e ${c.vfB} na leitura “0,01 = 1 venda”.` : '';
-  document.getElementById('indCompl').innerHTML = `Dado complementar — leads enviados para Follow (coluna G): <strong>${fmtInt(c.follow)}</strong>. Barras: verde = closer, cinza = média.${diff}${nota}`;
-}
-
-function renderLeitura(D){
-  document.querySelectorAll('.leitura .seg button').forEach(b=>b.setAttribute('aria-pressed', b.dataset.l===st.leitura));
-  document.getElementById('leituraInfo').textContent = st.leitura==='A'
-    ? `Time: ${D.t.vf} vendas de Follow (Eduardo 5, Misael 1, Rodrigo 0)`
-    : `Time: ${D.t.vf} vendas de Follow (Eduardo 8, Misael 5, Rodrigo 7)`;
+  const quem = id==='mes'?'mês':'closer';
+  $('compl').innerHTML = (c.follow===null ? '' : `Dado complementar — leads enviados para Follow: <strong>${fmtInt(c.follow)}</strong>. `) +
+    `Barras: verde = ${quem}, cinza = média.` + (c.vfA!==null && c.vfA!==c.vfB ? ` Vendas de Follow: ${c.vfB} na leitura “0,01 = 1 venda” e ${c.vfA} na leitura como exibida.` : '');
+  if(id==='closer'){
+    document.querySelectorAll('#closer-mes button').forEach(b=>b.setAttribute('aria-pressed', b.dataset.mes===V.mes));
+    document.getElementById('closer-aviso').innerHTML = AVISOS[V.mes];
+    document.getElementById('closer-titulo').textContent = `Visão geral do time em ${V.mes.toLowerCase()}`;
+    document.getElementById('closer-sub').textContent = `${D.cl.length} closers` + (V.mes==='Outubro'?' · dados até 06/10':', incluindo Rodrigo');
+  }
 }
 
 function render(){
-  const D = calc();
-  renderLeitura(D); renderKPIs(D); renderTabela(D); renderSeg(); renderBarras(D); renderInd(D);
+  document.querySelectorAll('.leitura .seg button').forEach(b=>b.setAttribute('aria-pressed', b.dataset.l===st.leitura));
+  const s=MESES.find(r=>r.nome==='Setembro');
+  document.getElementById('leituraInfo').textContent = `Setembro: ${st.leitura==='B'?s.vfB:s.vfA} vendas de Follow (a outra leitura dá ${st.leitura==='B'?s.vfA:s.vfB})`;
+  renderView('mes'); renderView('closer');
 }
 
-document.querySelector('.leitura .seg').addEventListener('click', e=>{
-  const b=e.target.closest('button'); if(!b) return; st.leitura=b.dataset.l; render();
+document.querySelector('.leitura .seg').addEventListener('click', e=>{const b=e.target.closest('button'); if(!b) return; st.leitura=b.dataset.l; render();});
+['mes','closer'].forEach(id=>{
+  document.getElementById(`${id}-seg`).addEventListener('click', e=>{const b=e.target.closest('button'); if(!b) return; VIEWS[id].metrica=b.dataset.m; renderView(id);});
+  document.getElementById(`${id}-sel`).addEventListener('change', e=>{VIEWS[id].sel=e.target.value; renderView(id);});
 });
-document.getElementById('segMetrica').addEventListener('click', e=>{
-  const b=e.target.closest('button'); if(!b) return; st.metrica=b.dataset.m; render();
+document.getElementById('closer-mes').addEventListener('click', e=>{const b=e.target.closest('button'); if(!b) return; VIEWS.closer.mes=b.dataset.mes; VIEWS.closer.sel=null; renderView('closer');});
+document.querySelector('.abas').addEventListener('click', e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  document.querySelectorAll('.abas button').forEach(x=>x.setAttribute('aria-selected', x===b));
+  document.getElementById('aba-mes').hidden = b.dataset.aba!=='mes';
+  document.getElementById('aba-closer').hidden = b.dataset.aba!=='closer';
 });
-const sel = document.getElementById('selCloser');
-sel.innerHTML = ROWS.map(r=>`<option>${r.nome}</option>`).join('');
-sel.addEventListener('change', ()=>{ st.closer=sel.value; render(); });
 render();
 </script>
 </body>
